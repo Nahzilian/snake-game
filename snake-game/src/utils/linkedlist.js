@@ -13,3 +13,4 @@ export class SinglyLinkedList {
         this.tail = node;
     }
 }
+
