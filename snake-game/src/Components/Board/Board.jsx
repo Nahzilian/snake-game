@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SinglyLinkedList } from '../../utils/linkedlist';
-import { getCoordsInDirection, getDirectionFromKey } from '../../utils/directions';
+import { getCoordsInDirection, getDirectionFromKey,randomValue } from '../../utils/directions';
 import { useInterval } from '../../utils/useIntervals';
 import './Board.css';
 
@@ -24,7 +24,9 @@ export default function Board() {
     const [snake, setSnake] = useState(new SinglyLinkedList(getCentralPoint(BOARDSIZE)));
     const [snakeCells, setSnakeCells] = useState(new Set([snake.head.value.cell])); // This is the body of the snake
     const [direction, setDirection] = useState(Direction.RIGHT);
-    const [move, setMove] = useState(100);
+    const [score, setScore] = useState(0);
+    const [foodCell, setFoodCell] = useState(new Set([randomValue(BOARDSIZE)]));
+    const [isGame, setIsGame] = useState(false);
 
     useEffect(() => {
         window.addEventListener("keydown", event => {
@@ -32,32 +34,57 @@ export default function Board() {
         })
     },[])
     
+    const checkGameOver = (nextHeadCell) => {
+        if (!nextHeadCell) return true;
+        return false
+    }
+
     const moveSnake = () => {
         const snakePos = {
             row: snake.head.value.row,
             col: snake.head.value.col
         }
         const nextPos = getCoordsInDirection(snakePos, direction);
+        if(nextPos.row > BOARDSIZE - 1 || nextPos.col > BOARDSIZE - 1) {
+            setIsGame(true);
+            return;
+        } 
+
+        if(nextPos.row < 0 || nextPos.col < 0) {
+            setIsGame(true);
+            return;
+        } 
+
         const nextHeadCell = board[nextPos.row][nextPos.col]
+        
+        if (checkGameOver(nextHeadCell)) {
+            setIsGame(true);
+            return;
+        }
+        // If the next head cell is food
+        if (foodCell.has(nextHeadCell)) {
+            setFoodCell(new Set([randomValue(BOARDSIZE)]));
+            setScore(oldScore => oldScore + 1);
+        }
+
         const newHead = { row: nextPos.row, col: nextPos.col, cell: nextHeadCell}
         setSnake(new SinglyLinkedList(newHead))
         setSnakeCells(new Set([nextHeadCell]));
     }
     
     useInterval(() => {
-        moveSnake();
-        //setMove(prev => prev - 1);
-        //setSnakeCells(prev => new Set([move]));
-        //console.log(snakeCells);
+        if(!isGame) moveSnake();
     }, [700])
 
     return (
         <div className="board">
+            <div>Score: {score}</div>
+            {isGame?<div>Game over</div>: ''}
             {board.map((row, rowIndex) => (
                 <div key={rowIndex} className="row">
                     {row.map((cell, cellIndex) => (
-                        <div key={cellIndex} className={`cell ${snakeCells.has(cell) ? 'snake-cell' : ''}`}>
-                            {cell}
+                        <div key={cellIndex} className={`cell ${foodCell.has(cell) ? 'food-cell' : ''} ${snakeCells.has(cell) ? 'snake-cell' : ''}`}>
+                            {/* {cell} */}
                         </div>
                         ))}
                 </div>

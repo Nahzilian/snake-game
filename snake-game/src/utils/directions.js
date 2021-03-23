@@ -32,6 +32,10 @@ export const getDirectionFromKey = (key) => {
     return '';
 }
 
+export const randomValue = (size) => {
+    return Math.floor(Math.random() * (size ** 2) + 1);
+}
+
 export const keyBinding = () => {
     // Change 
 }
