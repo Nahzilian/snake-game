@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SinglyLinkedList } from '../../utils/linkedlist';
-import { getCoordsInDirection } from '../../utils/directions';
+import { getCoordsInDirection, getDirectionFromKey } from '../../utils/directions';
 import { useInterval } from '../../utils/useIntervals';
 import './Board.css';
 
@@ -19,13 +19,18 @@ export default function Board() {
         return { row, col, cell };
     }
 
-    // Setting a 10 x 10 board
+    // Setting a 15 x 15 board
     const [board, setBoard] = useState(boardGeneration(BOARDSIZE));
     const [snake, setSnake] = useState(new SinglyLinkedList(getCentralPoint(BOARDSIZE)));
     const [snakeCells, setSnakeCells] = useState(new Set([snake.head.value.cell])); // This is the body of the snake
     const [direction, setDirection] = useState(Direction.RIGHT);
     const [move, setMove] = useState(100);
 
+    useEffect(() => {
+        window.addEventListener("keydown", event => {
+            setDirection(getDirectionFromKey(event.key));
+        })
+    },[])
     
     const moveSnake = () => {
         const snakePos = {
@@ -44,7 +49,7 @@ export default function Board() {
         //setMove(prev => prev - 1);
         //setSnakeCells(prev => new Set([move]));
         //console.log(snakeCells);
-    }, [1000])
+    }, [700])
 
     return (
         <div className="board">
