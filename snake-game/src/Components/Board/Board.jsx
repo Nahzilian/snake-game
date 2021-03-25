@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SinglyLinkedList } from '../../utils/linkedlist';
+import { SinglyLinkedList, Node } from '../../utils/linkedlist';
 import { getCoordsInDirection, getDirectionFromKey,randomValue } from '../../utils/directions';
 import { useInterval } from '../../utils/useIntervals';
 import './Board.css';
@@ -45,36 +45,50 @@ export default function Board() {
             col: snake.head.value.col
         }
         const nextPos = getCoordsInDirection(snakePos, direction);
+
+        // Wining condition
+        // If next pos is outside of the board
         if(nextPos.row > BOARDSIZE - 1 || nextPos.col > BOARDSIZE - 1) {
             setIsGame(true);
             return;
-        } 
-
+        }
         if(nextPos.row < 0 || nextPos.col < 0) {
             setIsGame(true);
             return;
         } 
 
+        // Create new cell position
         const nextHeadCell = board[nextPos.row][nextPos.col]
-        
+
+
+        // Check if new headcell is outside of board
+        /**
+         * For this part, maybe considered a different approach, since this is a bit of brute force way to do it
+        */
         if (checkGameOver(nextHeadCell)) {
             setIsGame(true);
             return;
         }
+
         // If the next head cell is food
         if (foodCell.has(nextHeadCell)) {
             setFoodCell(new Set([randomValue(BOARDSIZE)]));
             setScore(oldScore => oldScore + 1);
         }
+        
+        // Creating new head
+        const newHead = new Node({ row: nextPos.row, col: nextPos.col, cell: nextHeadCell});
+        const curHead = snake.head;
+        snake.head = newHead;
+        snake.next = curHead;
 
-        const newHead = { row: nextPos.row, col: nextPos.col, cell: nextHeadCell}
-        setSnake(new SinglyLinkedList(newHead))
+        // setSnake(new SinglyLinkedList(newHead))
         setSnakeCells(new Set([nextHeadCell]));
     }
     
     useInterval(() => {
         if(!isGame) moveSnake();
-    }, [700])
+    }, [150])
 
     return (
         <div className="board">
