@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SinglyLinkedList, Node } from '../../utils/linkedlist';
-import { getCoordsInDirection, getDirectionFromKey,randomValue } from '../../utils/directions';
+import { getCoordsInDirection, getDirectionFromKey,randomValue, getTailGrowthDirection } from '../../utils/directions';
 import { useInterval } from '../../utils/useIntervals';
 import './Board.css';
 
@@ -70,22 +70,62 @@ export default function Board() {
             return;
         }
 
+        // Creating new head
+        const newHead = new Node({ row: nextPos.row, col: nextPos.col, cell: nextHeadCell});
+        
+        const curHead = snake.head;
+        snake.head = newHead;
+        curHead.next = newHead;
+
+        const newSnakeCells = new Set(snakeCells);
+        newSnakeCells.delete(snake.tail.value.cell);
+        newSnakeCells.add(nextHeadCell);
+        
+        //console.log(newSnakeCells)
+        snake.tail = snake.tail.next;
+        if (snake.tail === null) snake.tail = snake.head;
+
+
         // If the next head cell is food
         if (foodCell.has(nextHeadCell)) {
             setFoodCell(new Set([randomValue(BOARDSIZE)]));
             setScore(oldScore => oldScore + 1);
+            growSnake(newSnakeCells);
+            handleFoodConsumption(newSnakeCells);
         }
         
-        // Creating new head
-        const newHead = new Node({ row: nextPos.row, col: nextPos.col, cell: nextHeadCell});
-        const curHead = snake.head;
-        snake.head = newHead;
-        snake.next = curHead;
-
         // setSnake(new SinglyLinkedList(newHead))
-        setSnakeCells(new Set([nextHeadCell]));
+        setSnakeCells(newSnakeCells);
     }
     
+    const growSnake = (newSnakeCells) => {
+        const nextCell = getTailGrowthDirection(snake.tail, direction);
+        if(!nextCell) return;
+
+        const newSnakeCell = board[nextCell.row][nextCell.col];
+        const newTail = new Node({
+            row: nextCell.row,
+            col: nextCell.col,
+            cell: newSnakeCell
+        })
+        const currentTail = snake.tail;
+        snake.tail = newTail;
+        snake.tail.next = currentTail;
+        newSnakeCells.add(newSnakeCell);
+    }
+
+    const handleFoodConsumption = newSnakeCells => {
+        let nextFoodCell;
+        while (true) {
+          nextFoodCell = randomValue(BOARDSIZE);
+          if (newSnakeCells.has(nextFoodCell) || foodCell === nextFoodCell)
+            continue;
+          break;
+        }
+    
+      };
+
+
     useInterval(() => {
         if(!isGame) moveSnake();
     }, [150])

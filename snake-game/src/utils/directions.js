@@ -39,3 +39,18 @@ export const randomValue = (size) => {
 export const keyBinding = () => {
     // Change 
 }
+
+export const getTailGrowthDirection = (tail, direction) => {
+    let growDirection;
+    if (direction === Direction.UP) growDirection = Direction.DOWN;
+    if (direction === Direction.RIGHT) growDirection = Direction.LEFT;
+    if (direction === Direction.DOWN) growDirection = Direction.UP;
+    if (direction === Direction.LEFT) growDirection = Direction.RIGHT;
+    
+    const curTail = {
+        row: tail.value.row,
+        col: tail.value.col,
+    }
+
+    return getCoordsInDirection(curTail, growDirection);
+}
