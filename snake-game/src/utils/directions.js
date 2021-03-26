@@ -36,21 +36,47 @@ export const randomValue = (size) => {
     return Math.floor(Math.random() * (size ** 2) + 1);
 }
 
+export const setDirectionForSnake = (curKey, nextKey) => {
+    const cNextKey = getDirectionFromKey(nextKey);
+    if (!isOppositeDirection(curKey, cNextKey)) {
+        return cNextKey
+    } else {
+        return curKey
+    }
+}
+
+const isOppositeDirection = (curKey, nextKey) => {
+    if(curKey === Direction.DOWN && nextKey === Direction.UP) return true;
+    if(curKey === Direction.UP && nextKey === Direction.DOWN) return true;
+    if(curKey === Direction.LEFT && nextKey === Direction.RIGHT) return true;
+    if(curKey === Direction.RIGHT && nextKey === Direction.LEFT) return true;
+    return false
+}
+
 export const keyBinding = () => {
     // Change 
 }
 
-export const getTailGrowthDirection = (tail, direction) => {
+export const getTailGrowthDirection = (tail, direction, size) => {
     let growDirection;
+    let tailRow = tail.value.row;
+    let tailCol = tail.value.col;
     if (direction === Direction.UP) growDirection = Direction.DOWN;
     if (direction === Direction.RIGHT) growDirection = Direction.LEFT;
     if (direction === Direction.DOWN) growDirection = Direction.UP;
     if (direction === Direction.LEFT) growDirection = Direction.RIGHT;
-    
+    if (direction === Direction.UP && tailCol - 1 > 0) growDirection = Direction.UP;
+    if (direction === Direction.DOWN && tailCol + 1 < size) growDirection = Direction.DOWN;
+    if (direction === Direction.LEFT && tailRow - 1 > 0) growDirection = Direction.LEFT;
+    if (direction === Direction.UP && tailRow + 1 < size) growDirection = Direction.RIGHT;
+
     const curTail = {
-        row: tail.value.row,
-        col: tail.value.col,
+        row: tailRow,
+        col: tailCol,
     }
+    
+    console.log(growDirection);
+    console.log(curTail);
 
     return getCoordsInDirection(curTail, growDirection);
 }

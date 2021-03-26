@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SinglyLinkedList, Node } from '../../utils/linkedlist';
-import { getCoordsInDirection, getDirectionFromKey,randomValue, getTailGrowthDirection } from '../../utils/directions';
+import { getCoordsInDirection, randomValue, getTailGrowthDirection, setDirectionForSnake } from '../../utils/directions';
 import { useInterval } from '../../utils/useIntervals';
 import './Board.css';
 
@@ -30,7 +30,7 @@ export default function Board() {
 
     useEffect(() => {
         window.addEventListener("keydown", event => {
-            setDirection(getDirectionFromKey(event.key));
+            setDirection(prev => setDirectionForSnake(prev, event.key));
         })
     },[])
     
@@ -60,7 +60,10 @@ export default function Board() {
         // Create new cell position
         const nextHeadCell = board[nextPos.row][nextPos.col]
 
-
+        if (snakeCells.has(nextHeadCell)){
+            setIsGame(true);
+            return;
+        }
         // Check if new headcell is outside of board
         /**
          * For this part, maybe considered a different approach, since this is a bit of brute force way to do it
@@ -85,7 +88,6 @@ export default function Board() {
         snake.tail = snake.tail.next;
         if (snake.tail === null) snake.tail = snake.head;
 
-
         // If the next head cell is food
         if (foodCell.has(nextHeadCell)) {
             setFoodCell(new Set([randomValue(BOARDSIZE)]));
@@ -99,7 +101,7 @@ export default function Board() {
     }
     
     const growSnake = (newSnakeCells) => {
-        const nextCell = getTailGrowthDirection(snake.tail, direction);
+        const nextCell = getTailGrowthDirection(snake.tail, direction, BOARDSIZE);
         if(!nextCell) return;
 
         const newSnakeCell = board[nextCell.row][nextCell.col];

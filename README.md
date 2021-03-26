@@ -11,4 +11,6 @@ To start: npm start
 
 ## Backlog
 
-- Create snake grow method
+- Adjust the movement of the snake
+    - Snake should not be able to go the other direction
+- Resolve the tail growing problem
