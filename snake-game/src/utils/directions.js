@@ -25,10 +25,10 @@ export const getCoordsInDirection = (coords, direction) => {
 }
 
 export const getDirectionFromKey = (key) => {
-    if(key === KeySetting.UP) return Direction.UP;
-    if(key === KeySetting.DOWN) return Direction.DOWN;
-    if(key === KeySetting.LEFT) return Direction.LEFT;
-    if(key === KeySetting.RIGHT) return Direction.RIGHT;
+    if (key === KeySetting.UP) return Direction.UP;
+    if (key === KeySetting.DOWN) return Direction.DOWN;
+    if (key === KeySetting.LEFT) return Direction.LEFT;
+    if (key === KeySetting.RIGHT) return Direction.RIGHT;
     return '';
 }
 
@@ -46,10 +46,10 @@ export const setDirectionForSnake = (curKey, nextKey) => {
 }
 
 const isOppositeDirection = (curKey, nextKey) => {
-    if(curKey === Direction.DOWN && nextKey === Direction.UP) return true;
-    if(curKey === Direction.UP && nextKey === Direction.DOWN) return true;
-    if(curKey === Direction.LEFT && nextKey === Direction.RIGHT) return true;
-    if(curKey === Direction.RIGHT && nextKey === Direction.LEFT) return true;
+    if (curKey === Direction.DOWN && nextKey === Direction.UP) return true;
+    if (curKey === Direction.UP && nextKey === Direction.DOWN) return true;
+    if (curKey === Direction.LEFT && nextKey === Direction.RIGHT) return true;
+    if (curKey === Direction.RIGHT && nextKey === Direction.LEFT) return true;
     return false
 }
 
@@ -57,10 +57,27 @@ export const keyBinding = () => {
     // Change 
 }
 
-export const getTailGrowthDirection = (tail, direction, size) => {
+export const getTailGrowthDirection = (tail, direction, oldDirection, size) => {
+    /**
+     * Get growth direction
+     * 
+     * A Snake will have both Row and Col position of the board
+     * - Tail should not grow within body
+     * - Tail should not grow out of the board
+     * - When current tail position is in one of the 4 corner
+     * - When the user just changed the direction
+    */
     let growDirection;
+    // Tail value
     let tailRow = tail.value.row;
     let tailCol = tail.value.col;
+    
+    // If the directions stay the same:
+    if(direction === oldDirection) {
+        console.log('yeah')
+    }
+
+
     if (direction === Direction.UP) growDirection = Direction.DOWN;
     if (direction === Direction.RIGHT) growDirection = Direction.LEFT;
     if (direction === Direction.DOWN) growDirection = Direction.UP;
@@ -74,9 +91,6 @@ export const getTailGrowthDirection = (tail, direction, size) => {
         row: tailRow,
         col: tailCol,
     }
-    
-    console.log(growDirection);
-    console.log(curTail);
 
     return getCoordsInDirection(curTail, growDirection);
 }

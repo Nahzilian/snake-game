@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SinglyLinkedList, Node } from '../../utils/linkedlist';
-import { getCoordsInDirection, randomValue, getTailGrowthDirection, setDirectionForSnake } from '../../utils/directions';
+import { getCoordsInDirection, randomValue, getTailGrowthDirection, setDirectionForSnake, getDirectionFromKey } from '../../utils/directions';
 import { useInterval } from '../../utils/useIntervals';
 import './Board.css';
 
@@ -24,16 +24,18 @@ export default function Board() {
     const [snake, setSnake] = useState(new SinglyLinkedList(getCentralPoint(BOARDSIZE)));
     const [snakeCells, setSnakeCells] = useState(new Set([snake.head.value.cell])); // This is the body of the snake
     const [direction, setDirection] = useState(Direction.RIGHT);
+    const [oldDirection, setOldDirection] = useState(Direction.RIGHT);
     const [score, setScore] = useState(0);
     const [foodCell, setFoodCell] = useState(new Set([randomValue(BOARDSIZE)]));
     const [isGame, setIsGame] = useState(false);
 
     useEffect(() => {
         window.addEventListener("keydown", event => {
+            setOldDirection(direction);
             setDirection(prev => setDirectionForSnake(prev, event.key));
         })
-    },[])
-    
+    }, [])
+
     const checkGameOver = (nextHeadCell) => {
         if (!nextHeadCell) return true;
         return false
@@ -48,19 +50,19 @@ export default function Board() {
 
         // Wining condition
         // If next pos is outside of the board
-        if(nextPos.row > BOARDSIZE - 1 || nextPos.col > BOARDSIZE - 1) {
+        if (nextPos.row > BOARDSIZE - 1 || nextPos.col > BOARDSIZE - 1) {
             setIsGame(true);
             return;
         }
-        if(nextPos.row < 0 || nextPos.col < 0) {
+        if (nextPos.row < 0 || nextPos.col < 0) {
             setIsGame(true);
             return;
-        } 
+        }
 
         // Create new cell position
         const nextHeadCell = board[nextPos.row][nextPos.col]
 
-        if (snakeCells.has(nextHeadCell)){
+        if (snakeCells.has(nextHeadCell)) {
             setIsGame(true);
             return;
         }
@@ -74,8 +76,8 @@ export default function Board() {
         }
 
         // Creating new head
-        const newHead = new Node({ row: nextPos.row, col: nextPos.col, cell: nextHeadCell});
-        
+        const newHead = new Node({ row: nextPos.row, col: nextPos.col, cell: nextHeadCell });
+
         const curHead = snake.head;
         snake.head = newHead;
         curHead.next = newHead;
@@ -83,26 +85,34 @@ export default function Board() {
         const newSnakeCells = new Set(snakeCells);
         newSnakeCells.delete(snake.tail.value.cell);
         newSnakeCells.add(nextHeadCell);
-        
+
         //console.log(newSnakeCells)
         snake.tail = snake.tail.next;
         if (snake.tail === null) snake.tail = snake.head;
 
         // If the next head cell is food
         if (foodCell.has(nextHeadCell)) {
-            setFoodCell(new Set([randomValue(BOARDSIZE)]));
+            setFoodCell(generateFoodCell());
             setScore(oldScore => oldScore + 1);
             growSnake(newSnakeCells);
             handleFoodConsumption(newSnakeCells);
         }
-        
+
         // setSnake(new SinglyLinkedList(newHead))
         setSnakeCells(newSnakeCells);
     }
-    
+
+    const generateFoodCell = () => {
+        let food = randomValue(BOARDSIZE);
+        while(snakeCells.has(food)) {
+            food = randomValue(BOARDSIZE);
+        }
+        return new Set([food]);
+    }
+
     const growSnake = (newSnakeCells) => {
-        const nextCell = getTailGrowthDirection(snake.tail, direction, BOARDSIZE);
-        if(!nextCell) return;
+        const nextCell = getTailGrowthDirection(snake.tail, direction, oldDirection, BOARDSIZE);
+        if (!nextCell) return;
 
         const newSnakeCell = board[nextCell.row][nextCell.col];
         const newTail = new Node({
@@ -119,30 +129,30 @@ export default function Board() {
     const handleFoodConsumption = newSnakeCells => {
         let nextFoodCell;
         while (true) {
-          nextFoodCell = randomValue(BOARDSIZE);
-          if (newSnakeCells.has(nextFoodCell) || foodCell === nextFoodCell)
-            continue;
-          break;
+            nextFoodCell = randomValue(BOARDSIZE);
+            if (newSnakeCells.has(nextFoodCell) || foodCell === nextFoodCell)
+                continue;
+            break;
         }
-    
-      };
+
+    };
 
 
     useInterval(() => {
-        if(!isGame) moveSnake();
+        if (!isGame) moveSnake();
     }, [150])
 
     return (
         <div className="board">
             <div>Score: {score}</div>
-            {isGame?<div>Game over</div>: ''}
+            {isGame ? <div>Game over</div> : ''}
             {board.map((row, rowIndex) => (
                 <div key={rowIndex} className="row">
                     {row.map((cell, cellIndex) => (
                         <div key={cellIndex} className={`cell ${foodCell.has(cell) ? 'food-cell' : ''} ${snakeCells.has(cell) ? 'snake-cell' : ''}`}>
                             {/* {cell} */}
                         </div>
-                        ))}
+                    ))}
                 </div>
             ))}
         </div>
@@ -151,7 +161,7 @@ export default function Board() {
 
 const boardGeneration = size => {
     const board = [];
-    for (let row = 0; row < size; row ++ ) {
+    for (let row = 0; row < size; row++) {
         const newRow = new Array(size).fill(0).map((cell, cellIndex) => cellIndex + size * row + 1);
         board.push(newRow);
     }
