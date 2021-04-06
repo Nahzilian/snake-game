@@ -4,8 +4,8 @@ import { getCoordsInDirection, randomValue, getTailGrowthDirection, setDirection
 import { useInterval } from '../../utils/useIntervals';
 import './Board.css';
 
-export default function Board() {
-    const BOARDSIZE = 15;
+export default function Board({ boardSize, speed }) {
+    const [BOARDSIZE, setBOARDSIZE] = useState(parseInt(boardSize) || 10);
     const Direction = {
         UP: 'UP',
         DOWN: 'DOWN',
@@ -30,6 +30,7 @@ export default function Board() {
     const [isGame, setIsGame] = useState(false);
 
     useEffect(() => {
+        console.log(boardSize)
         window.addEventListener("keydown", event => {
             setOldDirection(direction);
             setDirection(prev => setDirectionForSnake(prev, event.key));
@@ -51,10 +52,12 @@ export default function Board() {
         // Wining condition
         // If next pos is outside of the board
         if (nextPos.row > BOARDSIZE - 1 || nextPos.col > BOARDSIZE - 1) {
+            console.log('Here 1')
             setIsGame(true);
             return;
         }
         if (nextPos.row < 0 || nextPos.col < 0) {
+            console.log('Here 2')
             setIsGame(true);
             return;
         }
@@ -62,7 +65,10 @@ export default function Board() {
         // Create new cell position
         const nextHeadCell = board[nextPos.row][nextPos.col]
 
+
+        // The new snake cell caused this to trigger
         if (snakeCells.has(nextHeadCell)) {
+            console.log('Here 3')
             setIsGame(true);
             return;
         }
@@ -71,6 +77,7 @@ export default function Board() {
          * For this part, maybe considered a different approach, since this is a bit of brute force way to do it
         */
         if (checkGameOver(nextHeadCell)) {
+            console.log('Here 4')
             setIsGame(true);
             return;
         }
@@ -104,7 +111,7 @@ export default function Board() {
 
     const generateFoodCell = () => {
         let food = randomValue(BOARDSIZE);
-        while(snakeCells.has(food)) {
+        while (snakeCells.has(food)) {
             food = randomValue(BOARDSIZE);
         }
         return new Set([food]);
@@ -140,7 +147,7 @@ export default function Board() {
 
     useInterval(() => {
         if (!isGame) moveSnake();
-    }, [150])
+    }, [speed])
 
     return (
         <div className="board">
