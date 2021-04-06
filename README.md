@@ -15,12 +15,11 @@ To start: npm start
 
 - Food generation - ✅
 - Adjust the movement of the snake
-    - Snake should not be able to go the other direction
-    - However, they should be allowed to go other directions
+    - Snake should not be able to go the other direction ✅
 - Resolve the tail growing problem
-- Pressing reverse key triggers losing condition for some reason
+    - Pressing reverse key triggers losing condition for some reason
 - Out of bound problem
 
 ### Feature
 
-- Menu component
+- Menu component ✅
