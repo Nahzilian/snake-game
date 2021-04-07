@@ -10,7 +10,7 @@ const Menu = ({ playGame, board, setBoard, setSpeed }) => {
             </div>
             <div className="hint"> (Min: 10, Max: 20)</div>
 
-            <div className="row">
+            <div className="row-form">
                 <span> Number of rows:</span>
                 <select onChange={(e) => setSpeed(e.target.value)}>
                     <option value="1" defaultValue>x 1</option>

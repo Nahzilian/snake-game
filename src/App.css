@@ -35,7 +35,7 @@ input[type="number"], select {
 	font-size: 20px;
 }
 
-.row {
+.row-form {
 	display: flex;
 	flex-direction: row;
 	gap: 10px;

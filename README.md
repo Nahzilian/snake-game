@@ -11,9 +11,12 @@ To start: npm start
 
 ## Backlog
 
+### Suggestions
+
+- Retry button✅
+
 ### Error
 
-- Food generation - ✅
 - Adjust the movement of the snake
     - Snake should not be able to go the other direction ✅
 - Resolve the tail growing problem
@@ -22,4 +25,4 @@ To start: npm start
 
 ### Feature
 
-- Menu component ✅
+Multiplayer

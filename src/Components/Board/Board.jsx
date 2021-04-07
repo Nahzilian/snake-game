@@ -5,21 +5,21 @@ import { useInterval } from '../../utils/useIntervals';
 import './Board.css';
 
 export default function Board({ boardSize, speed }) {
-    const [BOARDSIZE, setBOARDSIZE] = useState(parseInt(boardSize) || 10);
     const Direction = {
         UP: 'UP',
         DOWN: 'DOWN',
         LEFT: 'LEFT',
         RIGHT: 'RIGHT'
     }
-
+    
     const getCentralPoint = size => {
         let row = Math.floor(size / 2), col = Math.floor(size / 2);
         let cell = board[row][col]
         return { row, col, cell };
     }
-
+    
     // Setting a 15 x 15 board
+    const [BOARDSIZE, setBOARDSIZE] = useState(parseInt(boardSize) || 10);
     const [board, setBoard] = useState(boardGeneration(BOARDSIZE));
     const [snake, setSnake] = useState(new SinglyLinkedList(getCentralPoint(BOARDSIZE)));
     const [snakeCells, setSnakeCells] = useState(new Set([snake.head.value.cell])); // This is the body of the snake
@@ -28,7 +28,6 @@ export default function Board({ boardSize, speed }) {
     const [score, setScore] = useState(0);
     const [foodCell, setFoodCell] = useState(new Set([randomValue(BOARDSIZE)]));
     const [isGame, setIsGame] = useState(false);
-
     useEffect(() => {
         console.log(boardSize)
         window.addEventListener("keydown", event => {
@@ -36,6 +35,18 @@ export default function Board({ boardSize, speed }) {
             setDirection(prev => setDirectionForSnake(prev, event.key));
         })
     }, [])
+
+    const resetGame = () => {
+        let newHead = new SinglyLinkedList(getCentralPoint(BOARDSIZE))
+        setBoard(boardGeneration(BOARDSIZE));
+        setSnake(newHead);
+        setSnakeCells(new Set([newHead.head.value.cell]));
+        setDirection(Direction.RIGHT);
+        setOldDirection(Direction.RIGHT);
+        setScore(0);
+        setFoodCell(new Set([randomValue(BOARDSIZE)]));
+        setIsGame(false);
+    }
 
     const checkGameOver = (nextHeadCell) => {
         if (!nextHeadCell) return true;
@@ -152,7 +163,8 @@ export default function Board({ boardSize, speed }) {
     return (
         <div className="board">
             <div>Score: {score}</div>
-            {isGame ? <div>Game over</div> : ''}
+            {isGame ? <div>Game over</div> : null}
+            {isGame ? <button className="btn btn-large" onClick={resetGame}>Retry?</button>: null}
             {board.map((row, rowIndex) => (
                 <div key={rowIndex} className="row">
                     {row.map((cell, cellIndex) => (
