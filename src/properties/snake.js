@@ -24,7 +24,7 @@ class LinkedList {
         let tempHead = this.head
         let value = newValue
         let snakeSet = new Set()
-        while (tempHead.next) {
+        while (tempHead) {
             snakeSet.add(value)
             let tempVal = tempHead.val
             tempHead.val = value
@@ -37,7 +37,7 @@ class LinkedList {
 
     print() {
         let tempHead = this.head
-        while (tempHead.next) {
+        while (tempHead) {
             console.log(tempHead.val)
             tempHead = tempHead.next
         }
@@ -55,22 +55,29 @@ export default class Snake {
         let head = new Node(center)
         this.snake = new LinkedList(head)
         this.snakeSet = new Set()
+        // Add snake
         this.snakeSet.add(center)
+        this.snakeSet.add(center + 1)
     }
 
-    test() {
-        console.log("Snake update")
-        this.snake.addNode(1)
-        this.snake.addNode(2)
-        this.snake.addNode(3)
-        this.snake.addNode(4)
-
-        for (let i = 0; i < 100; i++) {
-            this.snake.updateValues(i)
-
-            this.snake.print()
-        }
+    addCell (cell) {
+        this.snake.addNode(cell)
+        this.snakeSet.add(cell)
     }
+
+    // test() {
+    //     console.log("Snake update")
+    //     this.snake.addNode(1)
+    //     this.snake.addNode(2)
+    //     this.snake.addNode(3)
+    //     this.snake.addNode(4)
+
+    //     for (let i = 0; i < 100; i++) {
+    //         this.snake.updateValues(i)
+
+    //         this.snake.print()
+    //     }
+    // }
 
     snakeUpdate(newPos) {
         let snakeSet = this.snake.updateValues(newPos)
