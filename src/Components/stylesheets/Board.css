@@ -1,0 +1,19 @@
+.cell {
+    width: 90px;
+    height: 90px;
+    border: solid 1px black
+}
+
+.snake {
+    background-color: red;
+}
+
+.food {
+    background-color: green;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+
+}
