@@ -23,16 +23,16 @@ class LinkedList {
     updateValues(newValue) {
         let tempHead = this.head
         let value = newValue
-        let snakeSet = new Set()
+        let newSet = new Set()
         while (tempHead) {
-            snakeSet.add(value)
             let tempVal = tempHead.val
             tempHead.val = value
             value = tempVal
             tempHead = tempHead.next
+            newSet.add(value)
         }
 
-        return snakeSet
+        return newSet
     }
 
     print() {
@@ -54,10 +54,18 @@ export default class Snake {
 
         let head = new Node(center)
         this.snake = new LinkedList(head)
-        this.snakeSet = new Set()
+        this.snake.addNode(center + 1)
+        this.snake.addNode(center + 2)
+        this.snake.addNode(center + 3)
+
+        
         // Add snake
+        this.snakeSet = new Set()
         this.snakeSet.add(center)
         this.snakeSet.add(center + 1)
+        this.snakeSet.add(center + 2)
+        this.snakeSet.add(center + 3)
+
     }
 
     addCell (cell) {

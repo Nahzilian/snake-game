@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { initBoard } from '../properties/utils'
 import { useInterval } from '../properties/hooks'
 
-
+import { moveHandler, movement } from '../properties/movement'
 import Snake from '../properties/snake'
 import './stylesheets/Board.css'
 
@@ -32,26 +32,31 @@ const Row = ({ list, snake = new Set(), boardSize = 10 }) => {
 const Board = ({ size = 10 }) => {
     const board = initBoard(size)
     const [snake, setSnake] = useState()
-    const [counter, setCounter] = useState(50)
+    const [curHead, setCurHead] = useState()
+    const [direction, setDirection] = useState('RIGHT')
 
     useEffect(() => {
         let snk = new Snake(size)
         setSnake(snk)
+        setCurHead(snk.snake.head.val)
     }, [size])
 
-    // useInterval(() => {
-    //     if (snake) {
-    //         setSnake(snk => {
+    useEffect(() => {
+        window.addEventListener('keydown', (e) => {
+            setDirection(movement[e.key])
+        })
+    }, [])
 
-    //             console.log("Snake: ", snk)
-    //             console.log("Counter: ", counter)
-    //             snk.snakeUpdate(counter)
-    //             setCounter(counter - 1)
-    //             return snk
-    //         })
-    //     }
-    // }
-    //     , 1000)
+    useInterval(() => {
+        if (snake) {
+            setSnake(snk => {
+                let nextMove = moveHandler(direction, curHead, size)
+                setCurHead(snk.snake.head.val)
+                snk.snakeUpdate(nextMove)                
+                return snk
+            })
+        }
+    }, 1000)
 
 
 
