@@ -57,6 +57,7 @@ export default class Snake {
         this.snake.addNode(center + 1)
         this.snake.addNode(center + 2)
         this.snake.addNode(center + 3)
+        this.snake.addNode(center + 4)
 
         
         // Add snake
@@ -65,6 +66,7 @@ export default class Snake {
         this.snakeSet.add(center + 1)
         this.snakeSet.add(center + 2)
         this.snakeSet.add(center + 3)
+        this.snakeSet.add(center + 4)
 
     }
 
